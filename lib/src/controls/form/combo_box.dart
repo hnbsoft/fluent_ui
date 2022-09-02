@@ -22,6 +22,12 @@ const EdgeInsets _kAlignedMenuMargin = EdgeInsets.zero;
 const EdgeInsets _kListPadding = EdgeInsets.symmetric(vertical: 8.0);
 const double kMinInteractiveDimension = 48.0;
 
+/// HNB: A builder to customize decoration of combobox button.
+///
+/// Used by [Combobox.buttonDecoration].
+typedef ButtonDecorationBuilder = Decoration Function(
+    BuildContext context, Set<ButtonStates> states, bool showHighlight);
+
 /// A builder to customize combobox buttons.
 ///
 /// Used by [Combobox.selectedItemBuilder].
@@ -802,6 +808,7 @@ class Combobox<T> extends StatefulWidget {
     this.focusNode,
     this.autofocus = false,
     this.comboboxColor,
+    this.buttonDecoration,
     // When adding new arguments, consider adding similar arguments to
     // ComboboxFormField.
   })  : assert(
@@ -1036,6 +1043,11 @@ class Combobox<T> extends StatefulWidget {
   /// If it is not provided, the theme's [ThemeData.canvasColor] will be used
   /// instead.
   final Color? comboboxColor;
+
+  /// The decoration of the combobox button.
+  ///
+  /// If it is not provided, then using the original default decoration.
+  final ButtonDecorationBuilder? buttonDecoration;
 
   @override
   _ComboboxState<T> createState() => _ComboboxState<T>();
@@ -1351,14 +1363,16 @@ class _ComboboxState<T> extends State<Combobox<T>> with WidgetsBindingObserver {
           onPressed: _enabled ? _handleTap : null,
           builder: (context, states) {
             return Container(
-              decoration: kPickerDecorationBuilder(context, () {
-                if (_showHighlight) {
-                  return {ButtonStates.focused};
-                } else if (states.isFocused) {
-                  return <ButtonStates>{};
-                }
-                return states;
-              }()),
+              decoration: widget.buttonDecoration
+                      ?.call(context, states, _showHighlight) ??
+                  kPickerDecorationBuilder(context, () {
+                    if (_showHighlight) {
+                      return {ButtonStates.focused};
+                    } else if (states.isFocused) {
+                      return <ButtonStates>{};
+                    }
+                    return states;
+                  }()),
               child: result,
             );
           },
