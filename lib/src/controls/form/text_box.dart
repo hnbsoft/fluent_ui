@@ -16,6 +16,12 @@ enum OverlayVisibilityMode {
   always,
 }
 
+/// HNB: A builder to customize decoration of TextBox widget.
+///
+/// Used by [TextBox.textBoxDecoration].
+typedef TextBoxDecorationBuilder = Decoration Function(
+    BuildContext context, Set<ButtonStates> states, bool hasFocus);
+
 class _TextBoxSelectionGestureDetectorBuilder
     extends TextSelectionGestureDetectorBuilder {
   _TextBoxSelectionGestureDetectorBuilder({
@@ -131,6 +137,7 @@ class TextBox extends StatefulWidget {
     this.foregroundDecoration,
     this.highlightColor,
     this.clearGlobalKey,
+    this.textBoxDecoration,
   })  : assert(obscuringCharacter.length == 1),
         smartDashesType = smartDashesType ??
             (obscureText ? SmartDashesType.disabled : SmartDashesType.enabled),
@@ -490,6 +497,11 @@ class TextBox extends StatefulWidget {
   final ButtonThemeData? iconButtonThemeData;
 
   final GlobalKey? clearGlobalKey;
+
+  /// The decoration of the text box behind the text input.
+  ///
+  /// If it is not provided, then fallback to [decoration] property
+  final TextBoxDecorationBuilder? textBoxDecoration;
 
   @override
   _TextBoxState createState() => _TextBoxState();
@@ -959,33 +971,35 @@ class _TextBoxState extends State<TextBox>
           onPressed: enabled ? () {} : null,
           builder: (context, states) {
             return Container(
-              decoration: BoxDecoration(
-                borderRadius: radius,
-                border: Border.all(
-                  style: _effectiveFocusNode.hasFocus
-                      ? BorderStyle.solid
-                      : BorderStyle.none,
-                  width: 1,
-                  color: theme.brightness.isLight
-                      ? const Color.fromRGBO(0, 0, 0, 0.08)
-                      : const Color.fromRGBO(255, 255, 255, 0.07),
-                ),
-                color: _backgroundColor(states),
-              ).copyWith(
-                backgroundBlendMode: widget.decoration?.backgroundBlendMode,
-                border: widget.decoration?.border,
+              decoration: widget.textBoxDecoration
+                      ?.call(context, states, _effectiveFocusNode.hasFocus) ??
+                  BoxDecoration(
+                    borderRadius: radius,
+                    border: Border.all(
+                      style: _effectiveFocusNode.hasFocus
+                          ? BorderStyle.solid
+                          : BorderStyle.none,
+                      width: 1,
+                      color: theme.brightness.isLight
+                          ? const Color.fromRGBO(0, 0, 0, 0.08)
+                          : const Color.fromRGBO(255, 255, 255, 0.07),
+                    ),
+                    color: _backgroundColor(states),
+                  ).copyWith(
+                    backgroundBlendMode: widget.decoration?.backgroundBlendMode,
+                    border: widget.decoration?.border,
 
-                /// This border radius can't be applied, otherwise the error "A borderRadius
-                /// can only be given for a uniform Border." will be thrown. Instead,
-                /// [radius] is already set to get the value from [widget.decoration?.borderRadius],
-                /// if any.
-                // borderRadius: widget.decoration?.borderRadius,
-                boxShadow: widget.decoration?.boxShadow,
-                color: widget.decoration?.color,
-                gradient: widget.decoration?.gradient,
-                image: widget.decoration?.image,
-                shape: widget.decoration?.shape,
-              ),
+                    /// This border radius can't be applied, otherwise the error "A borderRadius
+                    /// can only be given for a uniform Border." will be thrown. Instead,
+                    /// [radius] is already set to get the value from [widget.decoration?.borderRadius],
+                    /// if any.
+                    // borderRadius: widget.decoration?.borderRadius,
+                    boxShadow: widget.decoration?.boxShadow,
+                    color: widget.decoration?.color,
+                    gradient: widget.decoration?.gradient,
+                    image: widget.decoration?.image,
+                    shape: widget.decoration?.shape,
+                  ),
               constraints: BoxConstraints(minHeight: widget.minHeight ?? 0),
               child: AnimatedContainer(
                 duration: theme.fasterAnimationDuration,
