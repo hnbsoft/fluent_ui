@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/foundation.dart';
 
-import '../../../utils/popup.dart';
-
 export 'controller.dart';
 
 part 'content.dart';
@@ -64,6 +62,9 @@ enum FlyoutOpenMode {
 
   /// The flyout will be opened when the user long-press the child
   longPress,
+
+  /// The flyout will opened when the user secondary press the child
+  secondaryPress,
 }
 
 /// A flyout is a light dismiss container that can show arbitrary UI as its
@@ -282,6 +283,12 @@ class _FlyoutState extends State<Flyout> {
         return GestureDetector(
           behavior: HitTestBehavior.translucent,
           onLongPress: controller.open,
+          child: popup,
+        );
+      case FlyoutOpenMode.secondaryPress:
+        return GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onSecondaryTap: controller.open,
           child: popup,
         );
     }

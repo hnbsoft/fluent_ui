@@ -91,7 +91,7 @@ class _AcrylicState extends State<Acrylic> {
     super.initState();
     _NoiseTextureCacher._instance ??= _NoiseTextureCacher._new();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _updateProperties();
+      if (mounted) _updateProperties();
       setState(() {});
     });
   }
@@ -313,7 +313,7 @@ class AcrylicProperties {
         shape = const RoundedRectangleBorder();
 
   @override
-  int get hashCode => hashValues(
+  int get hashCode => Object.hash(
         tint,
         tintAlpha,
         luminosityAlpha,
@@ -375,10 +375,10 @@ class _AcrylicGuts extends StatelessWidget {
       clipper: ShapeBorderClipper(shape: properties.shape),
       child: CustomPaint(
         painter: _AcrylicPainter(
-          tintColor: tint,
+          tintColor: disabled ? tint.withOpacity(1.0) : tint,
           luminosityColor: AcrylicHelper.getLuminosityColor(
             tint,
-            properties.luminosityAlpha,
+            disabled ? 1.0 : properties.luminosityAlpha,
           ),
         ),
         child: disabled
