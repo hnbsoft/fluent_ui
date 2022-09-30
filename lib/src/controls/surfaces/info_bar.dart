@@ -43,6 +43,7 @@ class InfoBar extends StatelessWidget {
     this.isLong = false,
     this.onClose,
     this.isIconVisible = true,
+    this.isTitleVisible = true,
   }) : super(key: key);
 
   /// The severity of this InfoBar.
@@ -72,6 +73,11 @@ class InfoBar extends StatelessWidget {
   ///
   /// Defaults to true
   final bool isIconVisible;
+
+  /// HNB: Whether the title is visible or not
+  ///
+  /// Defaults to true
+  final bool isTitleVisible;
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -134,7 +140,7 @@ class InfoBar extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  title,
+                  if (isTitleVisible) title,
                   if (content != null)
                     Padding(
                       padding: const EdgeInsetsDirectional.only(top: 6.0),
@@ -154,7 +160,7 @@ class InfoBar extends StatelessWidget {
                 crossAxisAlignment: WrapCrossAlignment.center,
                 spacing: 6,
                 children: [
-                  title,
+                  if (isTitleVisible) title,
                   if (content != null) content,
                   if (action != null)
                     Padding(
