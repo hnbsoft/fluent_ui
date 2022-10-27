@@ -58,6 +58,7 @@ class ContentDialog extends StatelessWidget {
     this.actions,
     this.style,
     this.constraints = kDefaultContentDialogConstraints,
+    this.dialogMargin,
   }) : super(key: key);
 
   /// The title of the dialog. Usually, a [Text] widget
@@ -76,6 +77,9 @@ class ContentDialog extends StatelessWidget {
   /// The constraints of the dialog. It defaults to `BoxConstraints(maxWidth: 368)`
   final BoxConstraints constraints;
 
+  /// HNB: The margin around the dialog popup window
+  final EdgeInsetsGeometry? dialogMargin;
+
   @override
   Widget build(BuildContext context) {
     assert(debugCheckHasFluentTheme(context));
@@ -88,6 +92,7 @@ class ContentDialog extends StatelessWidget {
       alignment: Alignment.center,
       child: Container(
         constraints: constraints,
+        margin: dialogMargin,
         decoration: style.decoration,
         child: Column(
           mainAxisSize: MainAxisSize.min,
